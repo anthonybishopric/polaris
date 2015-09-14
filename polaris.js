@@ -11,10 +11,16 @@ function Stellar(id, name, techLevel, x, y) {
 		pop: 0.4,
 		build: 0.3
 	};
+	this.popGrowth = 0.016;
 	this.executeTurn = function() {
 		// every turn, your population rises by (pop * ratios.pop / 100)
+		this.updatePopulation();
 
 	};
+	this.updatePopulation = function() {
+		var ratio = (1 + this.popGrowth*(this.ratios.pop+(Math.random()/100)));
+		this.population = Math.floor(this.population * ratio);
+	}
 }
 
 function JumpMap() {
@@ -56,3 +62,17 @@ function JumpConnection(stellarA, stellarB) {
 	this.deactivate = function() { this.active = false; };
 }
 
+// Tracking a value over time, bonuses and penalties.
+function TurnCounter(interval){
+	this.interval = interval;
+	this.turnCount = 0;
+	this.last = (new Date()).getTime();
+	this.executeOnTurn = function(fn) {
+		var cur = (new Date()).getTime();
+		if (cur - this.last > this.interval) {
+			this.turnCount++;
+			fn(this.turnCount);
+			this.last = cur;
+		}
+	};
+}
